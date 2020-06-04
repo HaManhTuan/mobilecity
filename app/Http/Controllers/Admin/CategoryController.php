@@ -52,11 +52,11 @@ class CategoryController extends Controller
     return view('backend.category.list')->with($data_send);
   }
   public function show(){
-    $cate = Category::select(['id','name','parent_id','description', 'status']);
+    $cate = Category::select(['id','name','parent_id','description', 'status'])->orderBy('parent_id','ASC');
     return Datatables::of($cate)->addIndexColumn()
     ->addColumn('action', function($cate){
     $action = '<a class="btn btn-warning btn-rounded edit" href="#" data-id='.$cate->id.' >Sửa</a>
-    <a class="btn btn-danger btn-rounded delete" id="edit-user"  href="#" data-id='.$cate->id.' >Xóa </a>
+    <a class="btn btn-danger btn-rounded delete"  href="#" data-id='.$cate->id.' >Xóa </a>
     <meta name="csrf-token" content="{{ csrf_token() }}">';
      return $action;
     })
@@ -83,6 +83,41 @@ class CategoryController extends Controller
     else
     {
         $msg = ['status' => '_success', 'msg' => 'Thêm danh mục thành công !'];
+        return response()->json($msg);
+    }
+  }
+  public function edit(Request $req)
+  {
+    $category = Category::where('id',$req->id)->first();
+    $category->name = $req->name;
+    $slug = Str::slug($req->name, '-');
+    $category->slug = $slug;
+    $category->parent_id = $req->parent_id;
+    $category->description = $req->description;
+    $category->kind = $req->kind;
+    $category->status = $req->input('status') ? '1' : '0';
+    $query = $category->save();
+    if (!$query || $query == false)
+    {
+        $msg = ['status' => '_error', 'msg' => 'Error !!!'];
+        return response()->json($msg);
+    }
+    else
+    {
+        $msg = ['status' => '_success', 'msg' => 'Thay đổi danh mục thành công !'];
+        return response()->json($msg);
+    }
+  }
+  public function delete(Request $req){
+    $query = Category::destroy($req->id);
+    if (!$query || $query == false)
+    {
+        $msg = ['status' => '_error', 'msg' => 'Error !!!'];
+        return response()->json($msg);
+    }
+    else
+    {
+        $msg = ['status' => '_success', 'msg' => 'Xóa danh mục thành công !'];
         return response()->json($msg);
     }
   }

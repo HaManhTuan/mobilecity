@@ -10,6 +10,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'Admin'], function () {
       Route::get('category', 'CategoryController@index')->name('admin.categoryPro.index');
       Route::get('category-get', 'CategoryController@show')->name('admin.categoryGet.index');
       Route::post('add-category', 'CategoryController@add')->name('admin.categoryAdd.index');
+      Route::post('edit-category', 'CategoryController@edit')->name('admin.categoryEdit.index');
+      Route::post('delete-category', 'CategoryController@delete')->name('admin.categoryDelete.index');
   
   //Category-Pro
 
